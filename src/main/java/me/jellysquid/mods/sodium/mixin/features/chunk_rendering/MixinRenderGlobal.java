@@ -48,17 +48,11 @@ public abstract class MixinRenderGlobal {
                                 @Local(ordinal = 0) double renderViewX,
                                 @Local(ordinal = 1) double renderViewY,
                                 @Local(ordinal = 2) double renderViewZ) {
-        int pass = net.minecraftforge.client.MinecraftForgeClient.getRenderPass();
         EntityPlayerSP player = this.mc.player;
         BlockPos.MutableBlockPos entityBlockPos = new BlockPos.MutableBlockPos();
         // Apply entity distance scaling
         Entity.setRenderDistanceWeight(MathHelper.clamp((double)this.mc.gameSettings.renderDistanceChunks / 8.0D, 1.0D, 2.5D) * SodiumClientMod.options().quality.entityDistanceScaling);
         for(Entity entity : loadedEntityList) {
-            // Skip entities that shouldn't render in this pass
-            if(!entity.shouldRenderInPass(pass)) {
-                continue;
-            }
-
             // Do regular vanilla checks for visibility
             if(!this.renderManager.shouldRender(entity, camera, renderViewX, renderViewY, renderViewZ) && !entity.isRidingOrBeingRiddenBy(player)) {
                 continue;

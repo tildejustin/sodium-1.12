@@ -170,7 +170,7 @@ public class ChunkGraphCuller implements ChunkCuller {
     }
 
     private ChunkGraphNode findAdjacentNode(ChunkGraphNode node, EnumFacing dir) {
-        return this.getNode(node.getChunkX() + dir.getXOffset(), node.getChunkY() + dir.getYOffset(), node.getChunkZ() + dir.getZOffset());
+        return this.getNode(node.getChunkX() + dir.getFrontOffsetX(), node.getChunkY() + dir.getFrontOffsetY(), node.getChunkZ() + dir.getFrontOffsetZ());
     }
 
     private ChunkGraphNode getNode(int x, int y, int z) {

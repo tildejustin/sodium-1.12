@@ -43,7 +43,7 @@ public class ClonedChunkSection {
     }
 
     public void init(ChunkSectionPos pos) {
-        Chunk chunk = world.getChunk(pos.getX(), pos.getZ());
+        Chunk chunk = world.getChunkFromChunkCoords(pos.getX(), pos.getZ());
 
         if (chunk == null) {
             throw new RuntimeException("Couldn't retrieve chunk at " + pos.toChunkPos());

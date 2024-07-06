@@ -9,7 +9,7 @@ import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeColorHelper;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Wrapper object used to defeat identity comparisons in mods. Since vanilla provides a unique object to them for each
@@ -58,10 +58,10 @@ public class WorldSliceLocal implements SodiumBlockAccess {
         return view.getWorldType();
     }
 
-    @Override
-    public boolean isSideSolid(BlockPos pos, EnumFacing side, boolean _default) {
-        return view.isSideSolid(pos, side, _default);
-    }
+    // @Override
+    // public boolean isSideSolid(BlockPos pos, EnumFacing side, boolean _default) {
+    //     return view.isSideSolid(pos, side, _default);
+    // }
 
     @Override
     public int getBlockTint(BlockPos pos, BiomeColorHelper.ColorResolver resolver) {

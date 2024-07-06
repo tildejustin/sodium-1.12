@@ -1,0 +1,13 @@
+accessWidener v2 named
+accessible method net/minecraft/world/biome/BiomeColorHelper$ColorResolver getColorAtPos (Lnet/minecraft/world/biome/Biome;Lnet/minecraft/util/math/BlockPos;)I
+accessible class net/minecraft/client/renderer/GlStateManager$FogState
+accessible field net/minecraft/client/renderer/GlStateManager fogState Lnet/minecraft/client/renderer/GlStateManager$FogState;
+accessible field net/minecraft/client/renderer/GlStateManager$BooleanState currentState Z
+accessible field net/minecraft/client/renderer/EntityRenderer fogColorRed F
+accessible field net/minecraft/client/renderer/EntityRenderer fogColorGreen F
+accessible field net/minecraft/client/renderer/EntityRenderer fogColorBlue F
+accessible class net/minecraft/client/renderer/block/model/WeightedBakedModel$WeightedModel
+accessible field net/minecraft/client/renderer/block/model/WeightedBakedModel$WeightedModel model Lnet/minecraft/client/renderer/block/model/IBakedModel;
+accessible field net/minecraft/util/WeightedRandom$Item itemWeight I
+accessible field net/minecraft/util/ResourceLocation resourceDomain Ljava/lang/String;
+accessible field net/minecraft/util/ResourceLocation resourcePath Ljava/lang/String;

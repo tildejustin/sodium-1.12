@@ -10,6 +10,7 @@ import me.jellysquid.mods.sodium.client.model.quad.ModelQuadViewMutable;
 import me.jellysquid.mods.sodium.client.model.quad.blender.BiomeColorBlender;
 import me.jellysquid.mods.sodium.client.model.quad.properties.ModelQuadFacing;
 import me.jellysquid.mods.sodium.client.model.quad.properties.ModelQuadFlags;
+import me.jellysquid.mods.sodium.client.render.block.BlockExtended;
 import me.jellysquid.mods.sodium.client.render.chunk.compile.buffers.ChunkModelBuffers;
 import me.jellysquid.mods.sodium.client.render.chunk.format.ModelVertexSink;
 import me.jellysquid.mods.sodium.client.util.MathUtil;
@@ -31,19 +32,15 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.IFluidBlock;
 import org.embeddedt.embeddium.render.fluid.EmbeddiumFluidSpriteCache;
 import repack.joml.Vector3d;
-
-import java.util.Objects;
 
 public class FluidRenderer {
 
     private static final float EPSILON = 0.001f;
 
-    private static final IBlockColor FLUID_COLOR_PROVIDER = (state, world, pos, tintIndex) -> WorldUtil.getFluid(state).getColor();
+    protected static int defaultColor = 0xFFFFFFFF;
+    private static final IBlockColor FLUID_COLOR_PROVIDER = (state, world, pos, tintIndex) -> defaultColor;
 
     private final BlockPos.MutableBlockPos scratchPos = new BlockPos.MutableBlockPos();
 
@@ -71,21 +68,21 @@ public class FluidRenderer {
         this.vanillaBlockColors = client.getBlockColors();
     }
 
-    private boolean isFluidOccluded(IBlockAccess world, int x, int y, int z, EnumFacing dir, Fluid fluid) {
+    private boolean isFluidOccluded(IBlockAccess world, int x, int y, int z, EnumFacing dir, BlockLiquid fluid) {
         BlockPos pos = this.scratchPos.setPos(x, y, z);
         IBlockState blockState = world.getBlockState(pos);
-        BlockPos adjPos = this.scratchPos.setPos(x + dir.getXOffset(), y + dir.getYOffset(), z + dir.getZOffset());
-        Fluid adjFluid = WorldUtil.getFluid(world.getBlockState(adjPos));
+        BlockPos adjPos = this.scratchPos.setPos(x + dir.getFrontOffsetX(), y + dir.getFrontOffsetY(), z + dir.getFrontOffsetZ());
+        BlockLiquid adjFluid = WorldUtil.getFluid(world.getBlockState(adjPos));
 
         if (blockState.getMaterial().isOpaque()) {
-            return fluid == adjFluid || blockState.isSideSolid(world,pos,dir);
+            return fluid == adjFluid || BlockExtended.isSideSolid(blockState.getBlock(), blockState, world, pos, dir);
             // fluidlogged or next to water, occlude sides that are solid or the same liquid
         }
         return fluid == adjFluid;
     }
 
     private boolean isSideExposed(IBlockAccess world, int x, int y, int z, EnumFacing dir) {
-        BlockPos pos = this.scratchPos.setPos(x + dir.getXOffset(), y + dir.getYOffset(), z + dir.getZOffset());
+        BlockPos pos = this.scratchPos.setPos(x + dir.getFrontOffsetX(), y + dir.getFrontOffsetY(), z + dir.getFrontOffsetZ());
         IBlockState blockState = world.getBlockState(pos);
 
         if (blockState.getMaterial().isOpaque()) {
@@ -109,7 +106,7 @@ public class FluidRenderer {
         int posY = pos.getY();
         int posZ = pos.getZ();
 
-        Fluid fluid = WorldUtil.toFluidBlock(fluidState.getBlock()).getFluid();
+        BlockLiquid fluid = WorldUtil.toFluidBlock(fluidState.getBlock());
 
         boolean sfUp = this.isFluidOccluded(world, posX, posY, posZ, EnumFacing.UP, fluid);
         boolean sfDown = this.isFluidOccluded(world, posX, posY, posZ, EnumFacing.DOWN, fluid) ||
@@ -304,9 +301,9 @@ public class FluidRenderer {
             }
 
             if (this.isSideExposed(world, posX, posY, posZ, dir)) {
-                int adjX = posX + dir.getXOffset();
-                int adjY = posY + dir.getYOffset();
-                int adjZ = posZ + dir.getZOffset();
+                int adjX = posX + dir.getFrontOffsetX();
+                int adjY = posY + dir.getFrontOffsetY();
+                int adjZ = posZ + dir.getFrontOffsetZ();
 
                 TextureAtlasSprite sprite = sprites[1];
                 TextureAtlasSprite oSprite = sprites[2];
@@ -433,7 +430,7 @@ public class FluidRenderer {
         quad.setTexV(i, v);
     }
 
-    private float getCornerHeight(IBlockAccess world, int x, int y, int z, Fluid fluid) {
+    private float getCornerHeight(IBlockAccess world, int x, int y, int z, BlockLiquid fluid) {
         int samples = 0;
         float totalHeight = 0.0F;
 
@@ -449,7 +446,7 @@ public class FluidRenderer {
             BlockPos pos = this.scratchPos.setPos(x2, y, z2);
 
             IBlockState blockState = world.getBlockState(pos);
-            Fluid fluid2 = WorldUtil.getFluidOfBlock(blockState.getBlock());
+            BlockLiquid fluid2 = WorldUtil.getFluidOfBlock(blockState.getBlock());
 
             if (fluid == fluid2) {
                 float height = WorldUtil.getFluidHeight(fluid2, blockState.getValue(BlockLiquid.LEVEL));

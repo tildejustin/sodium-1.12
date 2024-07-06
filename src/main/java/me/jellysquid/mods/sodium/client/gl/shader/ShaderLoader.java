@@ -35,7 +35,7 @@ public class ShaderLoader {
     }
 
     private static String getShaderPath(ResourceLocation name) {
-        return String.format("/assets/%s/shaders/%s", name.getNamespace(), name.getPath());
+        return String.format("/assets/%s/shaders/%s", name.resourceDomain, name.resourcePath);
     }
 
     private static String getShaderSource(String path) {

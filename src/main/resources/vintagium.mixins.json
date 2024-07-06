@@ -4,7 +4,6 @@
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_8",
   "plugin": "me.jellysquid.mods.sodium.mixin.SodiumMixinPlugin",
-  "refmap": "vintagium.mixins.refmap.json",
   "injectors": {
     "defaultRequire": 1
   },
@@ -16,12 +15,10 @@
     "core.MixinDirection",
     "core.frustum.MixinFrustum",
     "core.model.MixinBlockColors",
-    //"core.model.MixinItemColors",
     "core.pipeline.MixinBakedQuad",
     "core.pipeline.MixinBufferBuilder",
     "core.pipeline.MixinVertexFormat",
-    "core.pipeline.MixinUnpackedBakedQuad",
-   // "features.block.MixinBlockModelRenderer",
+    "core.translations.LocaleMixin",
     "features.block.MixinWorldRenderer",
     "features.buffer_builder.fast_advance.MixinVertexFormat",
     "features.buffer_builder.fast_sort.MixinBufferBuilder",
@@ -37,8 +34,6 @@
     "features.debug.MixinDebugHud",
     "features.fast_biome_colors.MixinBlock",
     "features.gui.MixinDebugHud",
-    "features.entity.smooth_lighting.MixinEntityRenderer",
-    "features.entity.smooth_lighting.MixinPaintingEntityRenderer",
     "features.model.MixinMultipartBakedModel",
     "features.model.MixinWeightedBakedModel",
     "features.options.MixinGameOptions",
@@ -50,8 +45,5 @@
     "features.render_layer.leaves.MixinLeavesBlock",
     "features.sky.MixinWorldRenderer",
     "features.world_ticking.MixinClientWorld"
-  ],
-  "mixins": [
-    "core.MixinBlockLiquid"
   ]
 }

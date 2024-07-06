@@ -8,6 +8,7 @@ import me.jellysquid.mods.sodium.client.gl.compat.FogHelper;
 import me.jellysquid.mods.sodium.client.gl.device.RenderDevice;
 import me.jellysquid.mods.sodium.client.gui.SodiumGameOptions;
 import me.jellysquid.mods.sodium.client.model.vertex.type.ChunkVertexType;
+import me.jellysquid.mods.sodium.client.render.block.TileEntityExtended;
 import me.jellysquid.mods.sodium.client.render.chunk.ChunkRenderBackend;
 import me.jellysquid.mods.sodium.client.render.chunk.ChunkRenderManager;
 import me.jellysquid.mods.sodium.client.render.chunk.backends.multidraw.MultidrawChunkRenderBackend;
@@ -38,7 +39,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.client.MinecraftForgeClient;
 
 import java.util.Map;
 import java.util.Set;
@@ -188,7 +188,7 @@ public class SodiumWorldRenderer implements ChunkStatusListener {
             this.reload();
         }
 
-        Profiler profiler = this.client.profiler;
+        Profiler profiler = this.client.mcProfiler;
         profiler.startSection("camera_setup");
 
         Entity viewEntity = this.client.getRenderViewEntity();
@@ -312,11 +312,11 @@ public class SodiumWorldRenderer implements ChunkStatusListener {
     }
 
     private boolean checkBEVisibility(TileEntity entity) {
-        return frustum.isBoundingBoxInFrustum(entity.getRenderBoundingBox());
+        return frustum.isBoundingBoxInFrustum(TileEntityExtended.getRenderBoundingBox(entity.getBlockType(), entity.getPos(), this.world));
     }
 
-    private void renderTE(TileEntity tileEntity, int pass, float partialTicks, int damageProgress) {
-        if((damageProgress < 0 && !tileEntity.shouldRenderInPass(pass)) || !checkBEVisibility(tileEntity))
+    private void renderTE(TileEntity tileEntity, float partialTicks, int damageProgress) {
+        if(!checkBEVisibility(tileEntity))
             return;
 
         try {
@@ -351,16 +351,16 @@ public class SodiumWorldRenderer implements ChunkStatusListener {
     }
 
     public void renderTileEntities(float partialTicks, Map<Integer, DestroyBlockProgress> damagedBlocks) {
-        int pass = MinecraftForgeClient.getRenderPass();
-        TileEntityRendererDispatcher.instance.preDrawBatch();
+        // int pass = MinecraftForgeClient.getRenderPass();
+        // TileEntityRendererDispatcher.instance.preDrawBatch();
         for (TileEntity tileEntity : this.chunkRenderManager.getVisibleBlockEntities()) {
-            renderTE(tileEntity, pass, partialTicks, -1);
+            renderTE(tileEntity, partialTicks, -1);
         }
 
         for (TileEntity tileEntity : this.globalBlockEntities) {
-            renderTE(tileEntity, pass, partialTicks, -1);
+            renderTE(tileEntity, partialTicks, -1);
         }
-        TileEntityRendererDispatcher.instance.drawBatch(pass);
+        // TileEntityRendererDispatcher.instance.drawBatch(pass);
 
         this.preRenderDamagedBlocks();
         for (DestroyBlockProgress destroyProgress : damagedBlocks.values()) {
@@ -383,7 +383,7 @@ public class SodiumWorldRenderer implements ChunkStatusListener {
 
                 IBlockState state = this.world.getBlockState(pos);
                 if (tileEntity != null && state.hasCustomBreakingProgress()) {
-                    renderTE(tileEntity, pass, partialTicks, destroyProgress.getPartialBlockDamage());
+                    renderTE(tileEntity, partialTicks, destroyProgress.getPartialBlockDamage());
                 }
             }
         }

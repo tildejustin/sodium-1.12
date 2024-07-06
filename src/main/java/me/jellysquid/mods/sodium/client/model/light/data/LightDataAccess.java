@@ -25,15 +25,15 @@ public abstract class LightDataAccess {
     protected WorldSlice world;
 
     public long get(int x, int y, int z, EnumFacing d1, EnumFacing d2) {
-        return this.get(x + d1.getXOffset() + d2.getXOffset(),
-                y + d1.getYOffset() + d2.getYOffset(),
-                z + d1.getZOffset() + d2.getZOffset());
+        return this.get(x + d1.getFrontOffsetX() + d2.getFrontOffsetX(),
+                y + d1.getFrontOffsetY() + d2.getFrontOffsetY(),
+                z + d1.getFrontOffsetZ() + d2.getFrontOffsetZ());
     }
 
     public long get(int x, int y, int z, EnumFacing dir) {
-        return this.get(x + dir.getXOffset(),
-                y + dir.getYOffset(),
-                z + dir.getZOffset());
+        return this.get(x + dir.getFrontOffsetX(),
+                y + dir.getFrontOffsetY(),
+                z + dir.getFrontOffsetZ());
     }
 
     public long get(BlockPos pos, EnumFacing dir) {
@@ -59,7 +59,7 @@ public abstract class LightDataAccess {
         float ao;
         boolean em;
 
-        if (state.getLightValue(world, pos) == 0) {
+        if (state.getLightValue() == 0) {
             ao = state.getAmbientOcclusionLightValue();
             em = false;/*state.hasEmissiveLighting(world, pos);*/
         } else {
@@ -68,7 +68,7 @@ public abstract class LightDataAccess {
         }
 
         // TODO Not sure about translucent
-        boolean op = state.isTranslucent() || state.getLightOpacity(world, pos) == 0;
+        boolean op = state.isTranslucent() || state.getLightOpacity() == 0;
         boolean fo = state.isOpaqueCube();
         boolean fc = state.isFullCube();
 

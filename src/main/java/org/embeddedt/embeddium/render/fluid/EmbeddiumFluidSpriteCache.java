@@ -3,12 +3,11 @@ package org.embeddedt.embeddium.render.fluid;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.jellysquid.mods.sodium.mixin.features.chunk_rendering.AccessorBlockFluidRenderer;
 import me.jellysquid.mods.sodium.mixin.features.chunk_rendering.AccessorBlockRenderDispatcher;
+import net.minecraft.block.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BlockFluidRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
 
 public class EmbeddiumFluidSpriteCache {
     // Cache the sprites array to avoid reallocating it on every call
@@ -41,16 +40,17 @@ public class EmbeddiumFluidSpriteCache {
         return sprite;
     }
 
-    public TextureAtlasSprite[] getSprites(Fluid fluid) {
-        if (fluid == FluidRegistry.WATER) {
+    public TextureAtlasSprite[] getSprites(BlockLiquid fluid) {
+        if (fluid == Blocks.WATER || fluid == Blocks.FLOWING_WATER) {
             return waterOverride;
-        } else if (fluid == FluidRegistry.LAVA) {
+        } else if (fluid == Blocks.LAVA || fluid == Blocks.FLOWING_LAVA) {
             return lavaOverride;
         }
-        sprites[0] = getTexture(fluid.getStill());
-        sprites[1] = getTexture(fluid.getFlowing());
-        ResourceLocation overlay = fluid.getOverlay();
-        sprites[2] = overlay != null ? getTexture(overlay) : null;
-        return sprites;
+        throw new RuntimeException("unimplemented");
+        // sprites[0] = getTexture(fluid.getStill());
+        // sprites[1] = getTexture(fluid.getFlowing());
+        // ResourceLocation overlay = fluid.getOverlay();
+        // sprites[2] = overlay != null ? getTexture(overlay) : null;
+        // return sprites;
     }
 }

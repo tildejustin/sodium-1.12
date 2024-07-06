@@ -31,11 +31,6 @@ import net.minecraft.util.ReportedException;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldType;
-import net.minecraftforge.client.ForgeHooksClient;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fluids.IFluidBlock;
-import org.embeddedt.embeddium.api.ChunkDataBuiltEvent;
-import org.embeddedt.embeddium.compat.ccl.CCLCompat;
 
 /**
  * Rebuilds all the meshes of a chunk for each given render pass with non-occluded blocks. The result is then uploaded
@@ -117,21 +112,19 @@ public class ChunkRenderRebuildTask<T extends ChunkGraphicsState> extends ChunkR
                             }
 
                             for(BlockRenderLayer layer : LAYERS) {
-                                if(!block.canRenderInLayer(blockState, layer)) {
+                                if(/* !block.canRenderInLayer(blockState, layer) */ !(block.getBlockLayer() == layer)) {
                                     continue;
                                 }
 
-                                ForgeHooksClient.setRenderLayer(layer);
+                                // ForgeHooksClient.setRenderLayer(layer);
 
-                                if (CCLCompat.canHandle(renderType)) {
-                                    CCLCompat.renderBlock(slice, pos, blockState, buffers.get(layer));
-                                } else if (renderType == EnumBlockRenderType.MODEL && WorldUtil.toFluidBlock(block) == null) {
+                                if (renderType == EnumBlockRenderType.MODEL && WorldUtil.toFluidBlock(block) == null) {
                                     IBakedModel model = cache.getBlockModels()
                                             .getModelForState(blockState);
 
                                     final long seed = MathUtil.hashPos(pos);
 
-                                    if (cache.getBlockRenderer().renderModel(cache.getLocalSlice(), blockState.getBlock().getExtendedState(blockState, cache.getLocalSlice(), pos), pos, model, buffers.get(layer), true, seed)) {
+                                    if (cache.getBlockRenderer().renderModel(cache.getLocalSlice(), blockState /* .getBlock().getExtendedState(blockState, cache.getLocalSlice(), pos) */, pos, model, buffers.get(layer), true, seed)) {
                                         bounds.addBlock(relX, relY, relZ);
                                     }
 
@@ -143,7 +136,7 @@ public class ChunkRenderRebuildTask<T extends ChunkGraphicsState> extends ChunkR
                             }
                         }
 
-                        if (block.hasTileEntity(blockState)) {
+                        if (block.hasTileEntity()) {
                             TileEntity entity = slice.getTileEntity(pos);
 
                             if (entity != null) {
@@ -172,7 +165,7 @@ public class ChunkRenderRebuildTask<T extends ChunkGraphicsState> extends ChunkR
         }
 
         
-        ForgeHooksClient.setRenderLayer(null);
+        // ForgeHooksClient.setRenderLayer(null);
 
         render.setRebuildForTranslucents(false);
         for (BlockRenderPass pass : BlockRenderPass.VALUES) {
@@ -188,7 +181,7 @@ public class ChunkRenderRebuildTask<T extends ChunkGraphicsState> extends ChunkR
         renderData.setOcclusionData(occluder.computeVisibility());
         renderData.setBounds(bounds.build(this.render.getChunkPos()));
 
-        MinecraftForge.EVENT_BUS.post(new ChunkDataBuiltEvent(renderData));
+        // MinecraftForge.EVENT_BUS.post(new ChunkDataBuiltEvent(renderData));
 
         return new ChunkBuildResult<>(this.render, renderData.build());
     }

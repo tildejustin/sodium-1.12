@@ -109,7 +109,7 @@ public class BlockRenderer {
             if (quadFace == null) {
                 quadFace = EnumFacing.DOWN;
             }
-            lighter.calculate((ModelQuadView) quad, pos, light, cullFace, quadFace, quad.shouldApplyDiffuseLighting());
+            lighter.calculate((ModelQuadView) quad, pos, light, cullFace, quadFace, /* quad.shouldApplyDiffuseLighting() */ false);
 
             if (quad.hasTintIndex() && colorizer == null) {
                 colorizer = this.blockColors.getColorProvider(state);
@@ -158,7 +158,7 @@ public class BlockRenderer {
     }
 
     private LightMode getLightingMode(IBlockState state, IBakedModel model, IBlockAccess world, BlockPos pos) {
-        if (this.useAmbientOcclusion && model.isAmbientOcclusion(state) && state.getLightValue(world, pos) == 0) {
+        if (this.useAmbientOcclusion && model.isAmbientOcclusion() && state.getLightValue() == 0) {
             return LightMode.SMOOTH;
         } else {
             return LightMode.FLAT;

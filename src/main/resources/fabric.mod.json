@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "vintagium",
+  "version": "${version}",
+  "name": "Vintagium",
+  "description": "Vintagium is a fork of Sodium, which is a free and open-source\noptimization mod for Minecraft which improves frame rates and reduces lag spikes.",
+  "authors": [
+    "NanoLive",
+    "embeddedt",
+    "CaffeineMC"
+  ],
+  "contact": {
+    "homepage": "https://github.com/tildejustin/sodium-1.12",
+    "sources": "https://github.com/tildejustin/sodium-1.12",
+    "issues": "https://github.com/tildejustin/sodium-1.12/issues"
+  },
+  "license": "GPL",
+  "environment": "client",
+  "icon": "assets/sodium/logo.png",
+  "mixins": [
+    "vintagium.mixins.json"
+  ],
+  "depends": {
+    "minecraft": "*",
+    "fabricloader": ">=0.15.0"
+  },
+  "accessWidener": "vintagium.accesswidener"
+}

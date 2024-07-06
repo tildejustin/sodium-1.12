@@ -166,7 +166,7 @@ public abstract class MixinWorldRenderer {
         this.renderer.renderTileEntities(partialTicks, damagedBlocks);
 
         this.mc.entityRenderer.disableLightmap();
-        this.mc.profiler.endSection();
+        this.mc.mcProfiler.endSection();
         ci.cancel();
     }
 

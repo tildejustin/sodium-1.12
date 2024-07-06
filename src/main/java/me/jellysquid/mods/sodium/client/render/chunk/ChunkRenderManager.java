@@ -422,7 +422,7 @@ public class ChunkRenderManager<T extends ChunkGraphicsState> implements ChunkSt
     }
 
     private ChunkRenderColumn<T> getAdjacentColumn(ChunkRenderColumn<T> column, EnumFacing dir) {
-        return this.getColumn(column.getX() + dir.getXOffset(), column.getZ() + dir.getZOffset());
+        return this.getColumn(column.getX() + dir.getFrontOffsetX(), column.getZ() + dir.getFrontOffsetZ());
     }
 
     private ChunkRenderColumn<T> getColumn(int x, int z) {
@@ -431,7 +431,7 @@ public class ChunkRenderManager<T extends ChunkGraphicsState> implements ChunkSt
 
     private ChunkRenderContainer<T> createChunkRender(ChunkRenderColumn<T> column, int x, int y, int z) {
         ChunkRenderContainer<T> render = new ChunkRenderContainer<>(this.backend, this.renderer, x, y, z, column);
-        final ExtendedBlockStorage array = this.world.getChunk(x, z).getBlockStorageArray()[y];
+        final ExtendedBlockStorage array = this.world.getChunkFromChunkCoords(x, z).getBlockStorageArray()[y];
 
         if (array == null || array.isEmpty()) {
             render.setData(ChunkRenderData.EMPTY);

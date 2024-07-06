@@ -5,7 +5,6 @@ import me.jellysquid.mods.sodium.client.render.SodiumWorldRenderer;
 import me.jellysquid.mods.sodium.client.render.chunk.data.ChunkRenderBounds;
 import me.jellysquid.mods.sodium.client.render.chunk.data.ChunkRenderData;
 import me.jellysquid.mods.sodium.client.render.chunk.passes.BlockRenderPass;
-import me.jellysquid.mods.sodium.client.render.texture.SpriteUtil;
 import me.jellysquid.mods.sodium.client.util.math.ChunkSectionPos;
 import me.jellysquid.mods.sodium.client.util.math.FrustumExtended;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -190,7 +189,7 @@ public class ChunkRenderContainer<T extends ChunkGraphicsState> {
      */
     public void tick() {
         for (TextureAtlasSprite sprite : this.data.getAnimatedSprites()) {
-            SpriteUtil.markSpriteActive(sprite);
+            // SpriteUtil.markSpriteActive(sprite);
         }
     }
 

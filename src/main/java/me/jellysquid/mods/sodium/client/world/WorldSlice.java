@@ -6,6 +6,7 @@ import me.jellysquid.mods.sodium.client.world.biome.BiomeColorCache;
 import me.jellysquid.mods.sodium.client.world.cloned.ChunkRenderContext;
 import me.jellysquid.mods.sodium.client.world.cloned.ClonedChunkSection;
 import me.jellysquid.mods.sodium.client.world.cloned.ClonedChunkSectionCache;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
@@ -22,7 +23,6 @@ import net.minecraft.world.biome.BiomeColorHelper;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
-import net.minecraftforge.client.model.pipeline.LightUtil;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -99,7 +99,7 @@ public class WorldSlice implements SodiumBlockAccess {
     private StructureBoundingBox volume;
 
     public static ChunkRenderContext prepare(World world, ChunkSectionPos origin, ClonedChunkSectionCache sectionCache) {
-        Chunk chunk = world.getChunk(origin.getX(), origin.getZ());
+        Chunk chunk = world.getChunkFromChunkCoords(origin.getX(), origin.getZ());
         ExtendedBlockStorage section = chunk.getBlockStorageArray()[origin.getY()];
 
         // If the chunk section is absent or empty, simply terminate now. There will never be anything in this chunk
@@ -257,7 +257,8 @@ public class WorldSlice implements SodiumBlockAccess {
     @Override
     public boolean isAirBlock(BlockPos pos) {
         IBlockState state = this.getBlockState(pos);
-        return state.getBlock().isAir(state, this, pos);
+        return state.getMaterial() == Material.AIR;
+        // return state.getBlock().isAir(state, this, pos);
     }
 
     public IBlockState getBlockState(int x, int y, int z) {
@@ -414,10 +415,10 @@ public class WorldSlice implements SodiumBlockAccess {
         return this.worldType;
     }
 
-    @Override
-    public boolean isSideSolid(BlockPos pos, EnumFacing side, boolean _default) {
-        return getBlockState(pos).isSideSolid(this, pos, side);
-    }
+    // @Override
+    // public boolean isSideSolid(BlockPos pos, EnumFacing side, boolean _default) {
+    //     return getBlockState(pos).isSideSolid(this, pos, side);
+    // }
 
     /**
      * Gets or computes the biome at the given global coordinates.
@@ -441,10 +442,7 @@ public class WorldSlice implements SodiumBlockAccess {
     }
 
     public float getBrightness(EnumFacing direction, boolean shaded) {
-        if (!shaded) {
-            return !world.provider.hasSkyLight() ? 0.9f : 1.0f;
-        }
-        return LightUtil.diffuseLight(direction);
+        return !world.provider.hasSkyLight() ? 0.9f : 1.0f;
     }
 
     // [VanillaCopy] PalettedContainer#toIndex

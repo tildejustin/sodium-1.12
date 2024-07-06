@@ -32,7 +32,7 @@ public class MixinBufferBuilder {
         this.byteBuffer.clear();
         FloatBuffer floatBuffer = this.byteBuffer.asFloatBuffer();
 
-        int vertexStride = this.vertexFormat.getSize();
+        int vertexStride = this.vertexFormat.getNextOffset();
         int quadStride = this.vertexFormat.getIntegerSize() * 4;
 
         int quadCount = this.vertexCount / 4;

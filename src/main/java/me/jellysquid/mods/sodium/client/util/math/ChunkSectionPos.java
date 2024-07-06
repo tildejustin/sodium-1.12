@@ -33,7 +33,7 @@ public class ChunkSectionPos extends Vec3i {
     }
 
     public static long offset(long packed, EnumFacing direction) {
-        return offset(packed, direction.getXOffset(), direction.getYOffset(), direction.getZOffset());
+        return offset(packed, direction.getFrontOffsetX(), direction.getFrontOffsetY(), direction.getFrontOffsetZ());
     }
 
     public static long offset(long packed, int x, int y, int z) {

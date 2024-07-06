@@ -1,5 +1,6 @@
 package me.jellysquid.mods.sodium.mixin.core.frustum;
 
+import me.jellysquid.mods.sodium.client.render.block.TileEntityExtended;
 import me.jellysquid.mods.sodium.client.util.math.FrustumExtended;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.tileentity.TileEntity;
@@ -27,7 +28,7 @@ public abstract class MixinFrustum implements FrustumExtended {
      */
     @Overwrite
     public boolean isBoundingBoxInFrustum(AxisAlignedBB box) {
-        if(box.equals(TileEntity.INFINITE_EXTENT_AABB))
+        if(box.equals(TileEntityExtended.INFINITE_EXTENT_AABB))
             return true;
         return this.isBoxInFrustum(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ);
     }

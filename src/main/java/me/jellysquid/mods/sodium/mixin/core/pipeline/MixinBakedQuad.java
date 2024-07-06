@@ -5,9 +5,8 @@ import me.jellysquid.mods.sodium.client.model.quad.properties.ModelQuadFlags;
 import me.jellysquid.mods.sodium.client.render.vertex.VertexFormatDescription;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.vertex.VertexFormat;
+import net.minecraft.client.renderer.vertex.*;
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -30,17 +29,17 @@ public class MixinBakedQuad implements ModelQuadView {
         throw new AssertionError();
     }
 
-    @Shadow @Final protected VertexFormat format;
     protected int cachedFlags;
 
     private VertexFormatDescription formatDescription;
 
-    @Inject(method = "<init>([IILnet/minecraft/util/EnumFacing;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;ZLnet/minecraft/client/renderer/vertex/VertexFormat;)V", at = @At("RETURN"))
-    private void init(int[] vertexData, int colorIndex, EnumFacing face, TextureAtlasSprite sprite, boolean shade, VertexFormat format, CallbackInfo ci) {
+    // unsure what to do about this
+    protected final VertexFormat format = DefaultVertexFormats.ITEM;
+
+    @Inject(method = "<init>", at = @At("RETURN"))
+    private void init(int[] vertexData, int colorIndex, EnumFacing face, TextureAtlasSprite sprite, CallbackInfo ci) {
         this.formatDescription = VertexFormatDescription.get(format);
-        if(!UnpackedBakedQuad.class.isAssignableFrom(this.getClass())) {
-            this.cachedFlags = ModelQuadFlags.getQuadFlags((BakedQuad) (Object) this);
-        }
+        this.cachedFlags = ModelQuadFlags.getQuadFlags((BakedQuad) (Object) this);
     }
 
     private int vertexOffset(int idx) {

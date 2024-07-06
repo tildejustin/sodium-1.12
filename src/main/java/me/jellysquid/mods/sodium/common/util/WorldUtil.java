@@ -1,15 +1,13 @@
 package me.jellysquid.mods.sodium.common.util;
 
-import me.jellysquid.mods.sodium.client.world.VanillaFluidBlock;
+import me.jellysquid.mods.sodium.client.render.block.BlockExtended;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.*;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.IFluidBlock;
 import repack.joml.Vector3d;
 
 /**
@@ -24,8 +22,8 @@ public class WorldUtil {
         BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos(pos);
 
         for (EnumFacing dire : DirectionUtil.HORIZONTAL_DIRECTIONS) {
-            int adjX = pos.getX() + dire.getXOffset();
-            int adjZ = pos.getZ() + dire.getZOffset();
+            int adjX = pos.getX() + dire.getFrontOffsetX();
+            int adjZ = pos.getZ() + dire.getFrontOffsetZ();
             mutable.setPos(adjX, pos.getY(), adjZ);
 
             int adjDecay = getEffectiveFlowDecay(world, mutable, thizz);
@@ -47,14 +45,14 @@ public class WorldUtil {
 
         IBlockState state = world.getBlockState(pos);
         if (state.getValue(BlockLiquid.LEVEL) >= 8) {
-            if (thizz.isSideSolid(world, pos.north(), EnumFacing.NORTH)
-                    || thizz.isSideSolid(world, pos.south(), EnumFacing.SOUTH)
-                    || thizz.isSideSolid(world, pos.west(), EnumFacing.WEST)
-                    || thizz.isSideSolid(world, pos.east(), EnumFacing.EAST)
-                    || thizz.isSideSolid(world, pos.up().south(), EnumFacing.NORTH)
-                    || thizz.isSideSolid(world, pos.up().west(), EnumFacing.SOUTH)
-                    || thizz.isSideSolid(world, pos.up().west(), EnumFacing.WEST)
-                    || thizz.isSideSolid(world, pos.up().east(), EnumFacing.EAST)) {
+            if (BlockExtended.isSideSolid(thizz.getBlock(), thizz, world, pos.north(), EnumFacing.NORTH)
+                    || BlockExtended.isSideSolid(thizz.getBlock(), thizz, world, pos.south(), EnumFacing.SOUTH)
+                    || BlockExtended.isSideSolid(thizz.getBlock(), thizz, world, pos.west(), EnumFacing.WEST)
+                    || BlockExtended.isSideSolid(thizz.getBlock(), thizz, world, pos.east(), EnumFacing.EAST)
+                    || BlockExtended.isSideSolid(thizz.getBlock(), thizz, world, pos.up().south(), EnumFacing.NORTH)
+                    || BlockExtended.isSideSolid(thizz.getBlock(), thizz, world, pos.up().west(), EnumFacing.SOUTH)
+                    || BlockExtended.isSideSolid(thizz.getBlock(), thizz, world, pos.up().west(), EnumFacing.WEST)
+                    || BlockExtended.isSideSolid(thizz.getBlock(), thizz, world, pos.up().east(), EnumFacing.EAST)) {
                 velocity = velocity.normalize().add(0.0D, -6.0D, 0.0D);
             }
         }
@@ -68,7 +66,7 @@ public class WorldUtil {
      * Returns true if any block in a 3x3x3 cube is not the same fluid and not an opaque full cube.
      * Equivalent to FluidState::method_15756 in modern.
      */
-    public static boolean method_15756(IBlockAccess world, BlockPos pos, Fluid fluid) {
+    public static boolean method_15756(IBlockAccess world, BlockPos pos, BlockLiquid fluid) {
         for (int i = 0; i < 2; ++i) {
             for (int j = 0; j < 2; ++j) {
                 IBlockState block = world.getBlockState(pos);
@@ -84,7 +82,7 @@ public class WorldUtil {
     /**
      * Returns fluid height as a percentage of the block; 0 is none and 1 is full.
      */
-    public static float getFluidHeight(Fluid fluid, int meta) {
+    public static float getFluidHeight(BlockLiquid fluid, int meta) {
         return fluid == null ? 0 : 1 - BlockLiquid.getLiquidHeightPercent(meta);
     }
 
@@ -108,45 +106,42 @@ public class WorldUtil {
         return !block.getMaterial().isOpaque() || block.getMaterial() == Material.LEAVES;
     }
 
-    public static Fluid getFluid(IBlockState b) {
-        IFluidBlock fluidBlock = toFluidBlock(b.getBlock());
-        return fluidBlock != null ? fluidBlock.getFluid() : null;
+    public static BlockLiquid getFluid(IBlockState b) {
+        BlockLiquid fluidBlock = toFluidBlock(b.getBlock());
+        return fluidBlock != null ? fluidBlock : null;
     }
 
     /**
      * Equivalent to method_15748 in 1.16.5
      */
-    public static boolean isEmptyOrSame(Fluid fluid, Fluid otherFluid) {
+    public static boolean isEmptyOrSame(BlockLiquid fluid, BlockLiquid otherFluid) {
         return otherFluid == null || fluid == otherFluid;
     }
 
     /**
      * Equivalent to method_15749 in 1.16.5
      */
-    public static boolean method_15749(IBlockAccess world, Fluid thiz, BlockPos pos, EnumFacing dir) {
+    public static boolean method_15749(IBlockAccess world, BlockLiquid thiz, BlockPos pos, EnumFacing dir) {
         IBlockState b = world.getBlockState(pos);
-        Fluid f = getFluid(b);
+        BlockLiquid f = getFluid(b);
         if (f == thiz) {
             return false;
         }
         if (dir == EnumFacing.UP) {
             return true;
         }
-        return b.getMaterial() != Material.ICE && b.isSideSolid(world, pos, dir);
+        return b.getMaterial() != Material.ICE && b.getBlockFaceShape(world, pos, dir) == BlockFaceShape.SOLID;
     }
 
-    public static IFluidBlock toFluidBlock(Block block) {
-        if(block instanceof VanillaFluidBlock) {
-            return ((VanillaFluidBlock) block).getFakeFluidBlock();
-        } else if(block instanceof IFluidBlock) {
-            return (IFluidBlock)block;
+    public static BlockLiquid toFluidBlock(Block block) {
+        if(block instanceof BlockLiquid) {
+            return ((BlockLiquid) block);
         } else {
             return null;
         }
     }
 
-    public static Fluid getFluidOfBlock(Block block) {
-        IFluidBlock fluidBlock = toFluidBlock(block);
-        return fluidBlock != null ? fluidBlock.getFluid() : null;
+    public static BlockLiquid getFluidOfBlock(Block block) {
+        return toFluidBlock(block);
     }
 }
